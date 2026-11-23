@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <!-- Configuración básica de codificación y vista adaptable para móviles -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roticeria Los Michis — Menú Digital y Pedidos</title>
+
+  <!-- Tipografías Inter y Playfair Display para estética editorial y alta legibilidad -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS por CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Configuración de colores y fuentes para el tema oscuro cálido de la rotisería
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+          },
+          colors: {
+            obsidiana: '#0b0a09',
+            carbon: '#141210',
+            superficie: '#1c1916',
+            superficieHover: '#24201c',
+            ambarFuego: '#f59e0b',
+            ambarBrillo: '#fbbf24',
+            ambarOscuro: '#b45309',
+          },
+          boxShadow: {
+            brilloAmbar: '0 0 30px -5px rgba(245, 158, 11, 0.25)',
+            profundidadTarjeta: '0 14px 34px -12px rgba(0, 0, 0, 0.75)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Estilos base, desplazamiento suave y barra de desplazamiento personalizada */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: #0b0a09;
+      color: #f5f5f4;
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .titulo-editorial {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    .fondo-portada {
+      background:
+        radial-gradient(circle at 80% 15%, rgba(245, 158, 11, 0.18), transparent 45%),
+        radial-gradient(circle at 15% 85%, rgba(180, 83, 9, 0.14), transparent 50%),
+        linear-gradient(180deg, #14110e 0%, #0b0a09 100%);
+    }
+
+    .seccion-menu {
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .sin-barra-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .sin-barra-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #141210;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #362f28;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #f59e0b;
+    }
+  </style>
+</head>
+<body class="bg-obsidiana text-stone-100 antialiased selection:bg-amber-500/30 selection:text-amber-200">
+
+  <!-- Barra superior fija con marca y acceso rápido al pedido -->
+  <header class="sticky top-0 z-30 backdrop-blur-md bg-obsidiana/90 border-b border-amber-500/15">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Identidad de Roticeria Los Michis -->
+      <a href="#inicio" class="flex items-center gap-3 group min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-700 flex items-center justify-center text-obsidiana font-extrabold text-lg shadow-brilloAmbar shrink-0 group-hover:scale-105 transition-transform">
+          LM
+        </div>
+        <div class="truncate">
+          <div class="font-extrabold tracking-tight text-sm sm:text-base text-white truncate">
+            ROTICERIA LOS MICHIS
+          </div>
+          <div class="text-[11px] text-amber-400/90 font-medium truncate">
+            Mar del Plata · Pedidos anticipados
+          </div>
+        </div>
+      </a>
+
+      <!-- Teléfono directo y botón de Mi Pedido -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <a
+          href="tel:2235382505"
+          class="hidden md:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-superficie hover:bg-superficieHover border border-stone-800 hover:border-amber-500/40 text-xs sm:text-sm font-semibold text-stone-200 transition"
+        >
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          2235382505
+        </a>
+
+        <button
+          id="btnAbrirPanelSuperior"
+          type="button"
+          class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidiana font-bold text-xs sm:text-sm shadow-brilloAmbar active:scale-95 transition cursor-pointer"
+        >
+          <span>Mi Pedido</span>
+          <span id="contadorCabecera" class="px-2 py-0.5 rounded-full bg-obsidiana text-amber-300 text-xs font-extrabold">
+            0
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Portada principal del menú -->
+  <section id="inicio" class="fondo-portada border-b border-stone-800/80 pt-9 pb-11 sm:pt-14 sm:pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Texto principal y acciones -->
+        <div class="lg:col-span-7 space-y-5">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold tracking-wide uppercase">
+            <span>🔥 Cocina Casera · Tandas Programadas</span>
+          </div>
+
+          <h1 class="titulo-editorial text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.08] tracking-tight">
+            Roticeria <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 italic">Los Michis</span>
+          </h1>
+
+          <p class="text-stone-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+            Empanadas individuales o a elección por sabor, medias docenas y docenas mixtas, hamburguesas simples y dobles, pebetes con pack de agregados, pizzas enteras o medias y ensaladas frescas. Ideal para resolver almuerzos y tandas de trabajo con anticipación.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3 pt-1">
+            <a
+              href="#grilla-menu"
+              class="flex-1 sm:flex-none text-center px-5 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidiana font-bold text-sm transition shadow-brilloAmbar"
+            >
+              Ver Menú
+            </a>
+            <button
+              id="btnAbrirPanelPortada"
+              type="button"
+              class="flex-1 sm:flex-none px-5 py-3.5 rounded-xl bg-superficie hover:bg-superficieHover border border-stone-700 text-stone-100 font-semibold text-sm transition cursor-pointer"
+            >
+              Armar Pedido
+            </button>
+            <a
+              href="https://wa.me/5492235382505"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-full sm:w-auto text-center text-xs sm:text-sm text-stone-400 hover:text-amber-300 font-medium px-2 py-1 transition"
+            >
+              WhatsApp: <strong class="text-amber-300">2235382505</strong>
+            </a>
+          </div>
+        </div>
+
+        <!-- Tarjeta lateral con resumen de promociones -->
+        <div class="lg:col-span-5">
+          <div class="rounded-2xl bg-superficie/95 border border-amber-500/20 p-5 sm:p-6 shadow-profundidadTarjeta space-y-4">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Promos y Modalidad</span>
+              <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-stone-800 text-stone-300 font-medium">No acumulables</span>
+            </div>
+
+            <div class="space-y-3 text-sm">
+              <div class="flex items-start gap-3 p-3 rounded-xl bg-obsidiana/70 border border-stone-800/90">
+                <span class="text-amber-400 font-extrabold text-base leading-none mt-0.5">10%</span>
+                <div>
+                  <p class="font-bold text-white">Agrupando 4 pedidos</p>
+                  <p class="text-xs text-stone-400">Juntá 4 pedidos en un mismo envío o tanda y obtené 10% OFF.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-3 rounded-xl bg-obsidiana/70 border border-stone-800/90">
+                <span class="text-amber-400 font-extrabold text-base leading-none mt-0.5">10%</span>
+                <div>
+                  <p class="font-bold text-white">Semana (Lun a Vie) · 50% de seña</p>
+                  <p class="text-xs text-stone-400">Reservá la semana completa de lunes a viernes con 50% de seña y tenés 10% OFF.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                <span class="text-amber-300 font-extrabold text-base leading-none mt-0.5">15%</span>
+                <div>
+                  <p class="font-bold text-amber-200">Semana (Lun a Vie) · Pago total adelantado</p>
+                  <p class="text-xs text-stone-300">Abonando el pago total anticipado de la semana obtenés 15% OFF.</p>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-xs text-stone-400 pt-1">
+              📌 Trabajamos con <strong class="text-stone-200">pedidos con anticipación</strong> para organizar entregas y tandas.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Barra de filtros por categoría -->
+  <section id="grilla-menu" class="sticky top-16 z-20 bg-obsidiana/95 backdrop-blur-md border-b border-stone-800/80 py-3">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div id="pestanasCategorias" class="flex items-center gap-2 overflow-x-auto pb-1 sin-barra-scroll" role="tablist" aria-label="Categorías del menú">
+        <button data-categoria="todos" class="pestana-cat activa px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap bg-amber-500 text-obsidiana shadow-brilloAmbar transition cursor-pointer">
+          Todo
+        </button>
+        <button data-categoria="empanadas" class="pestana-cat px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap bg-superficie hover:bg-superficieHover text-stone-300 border border-stone-800 transition cursor-pointer">
+          Empanadas
+        </button>
+        <button data-categoria="hamburguesas" class="pestana-cat px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap bg-superficie hover:bg-superficieHover text-stone-300 border border-stone-800 transition cursor-pointer">
+          Hamburguesas
+        </button>
+        <button data-categoria="pebetes" class="pestana-cat px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap bg-superficie hover:bg-superficieHover text-stone-300 border border-stone-800 transition cursor-pointer">
+          Pebetes
+        </button>
+        <button data-categoria="pizzas" class="pestana-cat px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap bg-superficie hover:bg-superficieHover text-stone-300 border border-stone-800 transition cursor-pointer">
+          Pizzas
+        </button>
+        <button data-categoria="ensaladas" class="pestana-cat px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap bg-superficie hover:bg-superficieHover text-stone-300 border border-stone-800 transition cursor-pointer">
+          Ensaladas
+        </button>
+        <button data-categoria="promos" class="pestana-cat px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap bg-superficie hover:bg-superficieHover text-stone-300 border border-stone-800 transition cursor-pointer">
+          Promos
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenido principal del menú -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 space-y-14 pb-28 lg:pb-16">
+
+    <!-- 1. EMPANADAS -->
+    <section data-seccion="empanadas" class="seccion-menu space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-stone-800 pb-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-400">01 · Carne o Jamón y Queso</span>
+          <h2 class="titulo-editorial text-2xl sm:text-3xl font-bold text-white mt-0.5">Empanadas</h2>
+        </div>
+        <p class="text-xs sm:text-sm text-stone-400">
+          Sabores: <strong class="text-stone-200">Carne</strong> o <strong class="text-stone-200">Jamón y Queso</strong> · Individuales a elección o packs
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- Individual / A elección -->
+        <article class="rounded-2xl bg-superficie border border-stone-800 hover:border-amber-500/40 p-5 flex flex-col justify-between shadow-profundidadTarjeta transition">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-stone-800 text-amber-300">Individual / A elección</span>
+              <span class="text-xl font-extrabold text-amber-400">$2.500 c/u</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Empanada Individual / A Elección</h3>
+            <p class="text-sm text-stone-400">
+              Elegí libremente cuántas de <strong class="text-stone-200">Carne</strong> y cuántas de <strong class="text-stone-200">Jamón y Queso</strong> querés llevar ($2.500 cada una).
+            </p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-stone-800/80 flex items-center justify-between gap-2">
+            <span class="text-xs text-stone-400">Cantidad libre por sabor</span>
+            <button
+              type="button"
+              onclick="abrirModalEmpanadas('elegida')"
+              class="px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500 text-amber-300 hover:text-obsidiana font-bold text-xs sm:text-sm border border-amber-500/30 transition cursor-pointer"
+            >
+              + Elegir Sabores
+            </button>
+          </div>
+        </article>
+
+        <!-- Media docena -->
+        <article class="rounded-2xl bg-superficie border border-stone-800 hover:border-amber-500/40 p-5 flex flex-col justify-between shadow-profundidadTarjeta transition">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-stone-800 text-amber-300">6 unidades</span>
+              <span class="text-xl font-extrabold text-amber-400">$13.000</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Media Docena</h3>
+            <p class="text-sm text-stone-400">
+              6 empanadas repartidas como prefieras entre Carne y Jamón y Queso.
+            </p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-stone-800/80 flex items-center justify-between gap-2">
+            <span class="text-xs text-emerald-400 font-medium">Ahorro vs. sueltas</span>
+            <button
+              type="button"
+              onclick="abrirModalEmpanadas('media')"
+              class="px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500 text-amber-300 hover:text-obsidiana font-bold text-xs sm:text-sm border border-amber-500/30 transition cursor-pointer"
+            >
+              + Agregar 1/2 Docena
+            </button>
+          </div>
+        </article>
+
+        <!-- Docena -->
+        <article class="rounded-2xl bg-gradient-to-b from-superficie to-obsidiana border border-amber-500/35 hover:border-amber-400 p-5 flex flex-col justify-between shadow-profundidadTarjeta transition">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300">12 unidades</span>
+              <span class="text-xl font-extrabold text-amber-400">$25.000</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Docena</h3>
+            <p class="text-sm text-stone-400">
+              12 empanadas repartidas como prefieras entre Carne y Jamón y Queso. Ideal para compartir en grupo.
+            </p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-stone-800/80 flex items-center justify-between gap-2">
+            <span class="text-xs text-emerald-400 font-medium">Mejor precio por docena</span>
+            <button
+              type="button"
+              onclick="abrirModalEmpanadas('docena')"
+              class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidiana font-bold text-xs sm:text-sm transition shadow-brilloAmbar cursor-pointer"
+            >
+              + Agregar Docena
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 2. HAMBURGUESAS -->
+    <section data-seccion="hamburguesas" class="seccion-menu space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-stone-800 pb-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-400">02 · Simples y Completas</span>
+          <h2 class="titulo-editorial text-2xl sm:text-3xl font-bold text-white mt-0.5">Hamburguesas</h2>
+        </div>
+        <p class="text-xs sm:text-sm text-stone-400">
+          <strong class="text-stone-200">Completas:</strong> Jamón, queso/cheddar, tomate y huevo · <strong class="text-stone-200">Simples:</strong> Queso/cheddar
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Simple -->
+        <article class="rounded-2xl bg-superficie border border-stone-800 hover:border-amber-500/40 p-5 flex flex-col justify-between shadow-profundidadTarjeta transition">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-stone-800 text-stone-300">Simple</span>
+              <span class="text-xl font-extrabold text-amber-400">$5.500</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Simple</h3>
+            <p class="text-sm text-stone-400">
+              Medallón con queso barra o cheddar a elección.
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="abrirModalHamburguesa('Simple', 5500, 'simple')"
+            class="mt-5 w-full py-3 rounded-xl bg-stone-800 hover:bg-amber-500 text-stone-100 hover:text-obsidiana font-bold text-xs sm:text-sm transition cursor-pointer"
+          >
+            Personalizar Simple · $5.500
+          </button>
+        </article>
+
+        <!-- Completa -->
+        <article class="rounded-2xl bg-superficie border border-stone-800 hover:border-amber-500/40 p-5 flex flex-col justify-between shadow-profundidadTarjeta transition">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300">Completa</span>
+              <span class="text-xl font-extrabold text-amber-400">$7.000</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Completa</h3>
+            <p class="text-sm text-stone-400">
+              Con jamón, queso barra o cheddar, tomate y huevo.
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="abrirModalHamburguesa('Completa', 7000, 'completa')"
+            class="mt-5 w-full py-3 rounded-xl bg-stone-800 hover:bg-amber-500 text-stone-100 hover:text-obsidiana font-bold text-xs sm:text-sm transition cursor-pointer"
+          >
+            Personalizar Completa · $7.000
+          </button>
+        </article>
+
+        <!-- Doble Simple -->
+        <article class="rounded-2xl bg-superficie border border-stone-800 hover:border-amber-500/40 p-5 flex flex-col justify-between shadow-profundidadTarjeta transition">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-stone-800 text-stone-300">Doble Simple</span>
+              <span class="text-xl font-extrabold text-amber-400">$9.500</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Doble Simple</h3>
+            <p class="text-sm text-stone-400">
+              Doble medallón con queso barra o cheddar a elección.
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="abrirModalHamburguesa('Doble Simple', 9500, 'simple')"
+            class="mt-5 w-full py-3 rounded-xl bg-stone-800 hover:bg-amber-500 text-stone-100 hover:text-obsidiana font-bold text-xs sm:text-sm transition cursor-pointer"
+          >
+            Personalizar Doble Simple · $9.500
+          </button>
+        </article>
+
+        <!-- Doble Completa -->
+        <article class="rounded-2xl bg-gradient-to-b from-superficie to-obsidiana border border-amber-500/40 hover:border-amber-400 p-5 flex flex-col justify-between shadow-profundidadTarjeta transition">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300">Doble Completa</span>
+              <span class="text-xl font-extrabold text-amber-400">$11.000</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Doble Completa</h3>
+            <p class="text-sm text-stone-400">
+              Doble medallón con jamón, queso barra o cheddar, tomate y huevo.
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="abrirModalHamburguesa('Doble Completa', 11000, 'completa')"
+            class="mt-5 w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidiana font-bold text-xs sm:text-sm transition shadow-brilloAmbar cursor-pointer"
+          >
+            Personalizar Doble Completa · $11.000
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <!-- 3. PEBETES y 4. PIZZAS -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <!-- 3. PEBETES -->
+      <section data-seccion="pebetes" class="seccion-menu space-y-5">
+        <div class="border-b border-stone-800 pb-3">
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-400">03 · Jamón y Queso o Salame y Queso</span>
+          <h2 class="titulo-editorial text-2xl sm:text-3xl font-bold text-white mt-0.5">Pebetes</h2>
+        </div>
+
+        <article class="rounded-2xl bg-superficie border border-stone-800 p-6 shadow-profundidadTarjeta space-y-5">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3 class="text-xl font-bold text-white">Pebete Base</h3>
+              <p class="text-sm text-stone-400 mt-1">
+                Elegí entre <strong class="text-stone-200">Jamón y Queso</strong> o <strong class="text-stone-200">Salame y Queso</strong>.
+              </p>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-extrabold text-amber-400">$4.500</div>
+              <div class="text-xs text-stone-400">+ $1.500 pack agregados</div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-obsidiana/70 border border-stone-800 space-y-3">
+            <p class="text-xs font-bold uppercase tracking-wider text-amber-300">
+              Pack de agregados (+$1.500 fijo · 1, 2 o los 3)
+            </p>
+            <p class="text-xs text-stone-400">
+              Pagás <strong class="text-stone-200">+$1.500</strong> en total por el combo de agregados eligiendo <strong class="text-stone-200">1, 2 o los 3</strong> ingredientes: tomate, huevo o lechuga.
+            </p>
+            <button
+              type="button"
+              onclick="abrirModalPebete()"
+              class="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidiana font-bold text-sm transition shadow-brilloAmbar cursor-pointer"
+            >
+              Personalizar Pebete
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <!-- 4. PIZZAS -->
+      <section data-seccion="pizzas" class="seccion-menu space-y-5">
+        <div class="border-b border-stone-800 pb-3">
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-400">04 · Listas para calentar o comer frías</span>
+          <h2 class="titulo-editorial text-2xl sm:text-3xl font-bold text-white mt-0.5">Pizzas</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <article class="rounded-2xl bg-superficie border border-stone-800 hover:border-amber-500/40 p-5 flex flex-col justify-between shadow-profundidadTarjeta transition">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-stone-800 text-amber-300">4 porciones</span>
+                <span class="text-xl font-extrabold text-amber-400">$9.000</span>
+              </div>
+              <h3 class="text-lg font-bold text-white">Media Pizza</h3>
+              <p class="text-sm text-stone-400">
+                Media pizza de 4 porciones, lista para calentar o comer fría.
+              </p>
+            </div>
+            <button
+              type="button"
+              onclick="agregarProductoDirecto('Media Pizza (4 porciones)', 9000, '4 porciones · Lista para calentar o comer fría')"
+              class="mt-5 w-full py-3 rounded-xl bg-stone-800 hover:bg-amber-500 text-stone-100 hover:text-obsidiana font-bold text-xs sm:text-sm transition cursor-pointer"
+            >
+              + Sumar Media · $9.000
+            </button>
+          </article>
+
+          <article class="rounded-2xl bg-gradient-to-b from-superficie to-obsidiana border border-amber-500/35 hover:border-amber-400 p-5 flex flex-col justify-between shadow-profundidadTarjeta transition">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300">8 porciones</span>
+                <span class="text-xl font-extrabold text-amber-400">$17.000</span>
+              </div>
+              <h3 class="text-lg font-bold text-white">Pizza Entera</h3>
+              <p class="text-sm text-stone-400">
+                Pizza entera de 8 porciones, lista para calentar o comer fría.
+              </p>
+            </div>
+            <button
+              type="button"
+              onclick="agregarProductoDirecto('Pizza Entera (8 porciones)', 17000, '8 porciones · Lista para calentar o comer fría')"
+              class="mt-5 w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidiana font-bold text-xs sm:text-sm transition shadow-brilloAmbar cursor-pointer"
+            >
+              + Sumar Entera · $17.000
+            </button>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <!-- 5. ENSALADAS -->
+    <section data-seccion="ensaladas" class="seccion-menu space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-stone-800 pb-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-amber-400">05 · Salada y de Frutas</span>
+          <h2 class="titulo-editorial text-2xl sm:text-3xl font-bold text-white mt-0.5">Ensaladas</h2>
+        </div>
+        <p class="text-xs sm:text-sm text-stone-400">
+          Ensalada salada: <strong class="text-stone-200">hasta 4 ingredientes</strong> · Atún aparte <strong class="text-amber-300">+$2.000</strong>
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Ensalada salada -->
+        <article class="rounded-2xl bg-superficie border border-stone-800 hover:border-amber-500/40 p-6 flex flex-col justify-between shadow-profundidadTarjeta space-y-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                Hasta 4 ingredientes
+              </span>
+              <span class="text-2xl font-extrabold text-amber-400">$4.000</span>
+            </div>
+            <h3 class="text-xl font-bold text-white">Ensalada Salada</h3>
+            <p class="text-sm text-stone-400">
+              Elegí hasta <strong class="text-stone-200">4 ingredientes</strong> a elección sobre base de arroz, lentejas, tomate, lechuga, zanahoria, huevo y repollo. Extra de <strong class="text-amber-300">atún por +$2.000</strong>.
+            </p>
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              <span class="text-xs px-2.5 py-1 rounded-lg bg-obsidiana text-stone-300 border border-stone-800">Arroz</span>
+              <span class="text-xs px-2.5 py-1 rounded-lg bg-obsidiana text-stone-300 border border-stone-800">Lentejas</span>
+              <span class="text-xs px-2.5 py-1 rounded-lg bg-obsidiana text-stone-300 border border-stone-800">Tomate</span>
+              <span class="text-xs px-2.5 py-1 rounded-lg bg-obsidiana text-stone-300 border border-stone-800">Lechuga</span>
+              <span class="text-xs px-2.5 py-1 rounded-lg bg-obsidiana text-stone-300 border border-stone-800">Zanahoria</span>
+              <span class="text-xs px-2.5 py-1 rounded-lg bg-obsidiana text-stone-300 border border-stone-800">Huevo</span>
+              <span class="text-xs px-2.5 py-1 rounded-lg bg-obsidiana text-stone-300 border border-stone-800">Repollo</span>
+              <span class="text-xs px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/30">+ Atún (+$2.000)</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onclick="abrirModalEnsalada()"
+            class="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidiana font-bold text-sm transition shadow-brilloAmbar cursor-pointer"
+          >
+            Armar Ensalada Salada ($4.000)
+          </button>
+        </article>
+
+        <!-- Ensalada de frutas -->
+        <article class="rounded-2xl bg-superficie border border-stone-800 hover:border-amber-500/40 p-6 flex flex-col justify-between shadow-profundidadTarjeta space-y-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                Pote Fresco
+              </span>
+              <span class="text-2xl font-extrabold text-amber-400">$4.500</span>
+            </div>
+            <h3 class="text-xl font-bold text-white">Ensalada de Frutas</h3>
+            <p class="text-sm text-stone-400">
+              Porción individual de ensalada de frutas fresca.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onclick="agregarProductoDirecto('Ensalada de Frutas', 4500, 'Porción individual')"
+            class="w-full py-3 px-4 rounded-xl bg-stone-800 hover:bg-amber-500 text-stone-100 hover:text-obsidiana font-bold text-sm transition cursor-pointer"
+          >
+            + Sumar Ensalada de Frutas · $4.500
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <!-- 6. PROMOS Y CONDICIONES -->
+    <section data-seccion="promos" class="seccion-menu space-y-5">
+      <div class="border-b border-stone-800 pb-3">
+        <span class="text-xs font-bold uppercase tracking-widest text-amber-400">06 · Condiciones y Promociones No Acumulables</span>
+        <h2 class="titulo-editorial text-2xl sm:text-3xl font-bold text-white mt-0.5">Promos, Seña y Pedidos Anticipados</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="rounded-2xl bg-superficie border border-stone-800 p-5 space-y-2">
+          <div class="text-amber-400 font-extrabold text-lg">10% OFF · Agrupando 4 pedidos</div>
+          <p class="text-sm text-stone-300">
+            Reuní <strong class="text-white">4 pedidos</strong> en una misma tanda o envío y obtené <strong class="text-amber-300">10% de descuento</strong>.
+          </p>
+          <p class="text-xs text-stone-400">No acumulable con otras promociones.</p>
+        </div>
+
+        <div class="rounded-2xl bg-superficie border border-stone-800 p-5 space-y-2">
+          <div class="text-amber-400 font-extrabold text-lg">10% OFF · Semana con 50% de seña</div>
+          <p class="text-sm text-stone-300">
+            Reservando la semana completa de <strong class="text-white">lunes a viernes</strong> con <strong class="text-amber-300">50% de seña</strong> obtenés <strong class="text-amber-300">10% de descuento</strong>.
+          </p>
+          <p class="text-xs text-stone-400">No acumulable con otras promociones.</p>
+        </div>
+
+        <div class="rounded-2xl bg-gradient-to-br from-amber-500/15 to-superficie border border-amber-500/40 p-5 space-y-2">
+          <div class="text-amber-300 font-extrabold text-lg">15% OFF · Pago total adelantado</div>
+          <p class="text-sm text-stone-200">
+            Abonando el <strong class="text-white">pago total anticipado</strong> de la semana de <strong class="text-white">lunes a viernes</strong> accedés a <strong class="text-amber-300">15% de descuento</strong>.
+          </p>
+          <p class="text-xs text-stone-400">No acumulable con otras promociones.</p>
+        </div>
+      </div>
+
+      <div class="rounded-2xl bg-obsidiana border border-stone-800/90 p-5 text-xs sm:text-sm text-stone-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <p class="font-bold text-white">Condiciones generales:</p>
+          <p class="text-stone-400">
+            • Trabajamos con <strong class="text-stone-200">pedidos con anticipación</strong> para organizar entregas y tandas. · Todas las promociones son <strong class="text-stone-200">no acumulables</strong>. · Contacto: <strong class="text-amber-300">2235382505</strong>.
+          </p>
+        </div>
+        <button
+          type="button"
+          onclick="abrirPanel()"
+          class="px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500 text-amber-300 hover:text-obsidiana font-bold text-xs whitespace-nowrap border border-amber-500/30 transition cursor-pointer"
+        >
+          Ir a Mi Pedido →
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Barra inferior fija en celular para acceso cómodo con una sola mano -->
+  <div class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-carbon/95 backdrop-blur-md border-t border-amber-500/25 px-4 py-3 flex items-center justify-between gap-3">
+    <div>
+      <div class="text-[11px] text-stone-400">Total estimado</div>
+      <div id="totalBarraMovil" class="text-base font-extrabold text-amber-400">$0</div>
+    </div>
+    <button
+      type="button"
+      onclick="abrirPanel()"
+      class="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-obsidiana font-bold text-xs sm:text-sm shadow-brilloAmbar cursor-pointer"
+    >
+      Ver Pedido (<span id="cantidadBarraMovil">0</span>)
+    </button>
+  </div>
+
+  <!-- Fondo oscuro para el panel lateral de pedido -->
+  <div id="fondoPanel" class="fixed inset-0 z-40 bg-black/70 backdrop-blur-xs hidden opacity-0 transition-opacity duration-200"></div>
+
+  <!-- Panel lateral deslizante de resumen y envío por WhatsApp -->
+  <aside
+    id="panelPedido"
+    aria-label="Resumen de pedido"
+    class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-carbon border-l border-stone-800 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col"
+  >
+    <!-- Encabezado del panel -->
+    <div class="p-5 border-b border-stone-800 flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-extrabold text-white">Tu Pedido</h2>
+        <p class="text-xs text-stone-400">Roticeria Los Michis · 2235382505</p>
+      </div>
+      <button
+        id="btnCerrarPanel"
+        type="button"
+        aria-label="Cerrar panel de pedido"
+        class="w-10 h-10 rounded-xl bg-superficie hover:bg-stone-800 text-stone-300 hover:text-white flex items-center justify-center transition cursor-pointer"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Cuerpo del panel con ítems, promoción y aclaración -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-5">
+      <div id="contenedorItemsPedido" class="space-y-3">
+        <!-- Se completa dinámicamente con JavaScript -->
+      </div>
+
+      <!-- Selector de promoción no acumulable -->
+      <div class="rounded-2xl bg-superficie border border-stone-800 p-4 space-y-2.5">
+        <label for="selectorPromo" class="block text-xs font-bold uppercase tracking-wider text-amber-400">
+          Promoción (no acumulable)
+        </label>
+        <select
+          id="selectorPromo"
+          onchange="renderizarPedido()"
+          class="w-full rounded-xl bg-obsidiana border border-stone-700 focus:border-amber-400 focus:outline-none px-3 py-2.5 text-sm text-white font-medium"
+        >
+          <option value="ninguna">Sin promoción aplicada (0% OFF)</option>
+          <option value="agrupados4">Agrupando 4 pedidos — 10% OFF</option>
+          <option value="semana_sena">Semana (lunes a viernes) con 50% de seña — 10% OFF</option>
+          <option value="semana_adelantado">Semana (lunes a viernes) pago total adelantado — 15% OFF</option>
+        </select>
+        <p class="text-[11px] text-stone-400">
+          Las promociones no son acumulables entre sí y aplican sobre pedidos con anticipación.
+        </p>
+      </div>
+
+      <!-- Campo opcional de nombre al finalizar el pedido -->
+      <div class="space-y-1.5">
+        <label for="nombrePedido" class="block text-xs font-semibold text-stone-300">
+          Nombre
+        </label>
+        <input
+          id="nombrePedido"
+          type="text"
+          placeholder="Tu nombre"
+          class="w-full rounded-xl bg-superficie border border-stone-700 focus:border-amber-400 focus:outline-none px-3.5 py-2.5 text-sm text-white placeholder-stone-500"
+        />
+      </div>
+    </div>
+
+    <!-- Pie del panel con totales y envío directo a WhatsApp -->
+    <div class="p-5 bg-obsidiana border-t border-stone-800 space-y-4 pb-7 sm:pb-5">
+      <div class="space-y-1.5 text-sm">
+        <div class="flex justify-between text-stone-400">
+          <span>Subtotal</span>
+          <span id="subtotalTexto" class="font-semibold text-stone-200">$0</span>
+        </div>
+        <div id="filaDescuento" class="flex justify-between text-emerald-400 hidden">
+          <span id="etiquetaDescuento">Descuento</span>
+          <span id="montoDescuentoTexto" class="font-bold">-$0</span>
+        </div>
+        <div class="flex justify-between text-base font-extrabold text-white pt-2 border-t border-stone-800">
+          <span>Total</span>
+          <span id="totalTexto" class="text-amber-400 text-xl">$0</span>
+        </div>
+        <div id="filaSena" class="flex justify-between text-xs text-amber-300/90 hidden pt-1">
+          <span>Seña del 50% para reservar semana:</span>
+          <span id="montoSenaTexto" class="font-bold">$0</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-2.5">
+        <button
+          id="btnEnviarWhatsApp"
+          type="button"
+          onclick="enviarPedidoWhatsApp()"
+          class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidiana font-extrabold text-sm shadow-brilloAmbar transition active:scale-[0.99] cursor-pointer"
+        >
+          📲 Pedir por WhatsApp (Esperar Confirmación)
+        </button>
+        <button
+          type="button"
+          onclick="vaciarPedido()"
+          class="w-full py-2.5 px-3 rounded-xl bg-superficie hover:bg-stone-800 text-stone-400 hover:text-stone-200 text-xs font-semibold transition cursor-pointer"
+        >
+          Vaciar pedido
+        </button>
+      </div>
+
+      <!-- Mensaje de aviso en pantalla (sin usar alert()) -->
+      <div id="avisoEstado" class="hidden rounded-xl px-3.5 py-2.5 text-xs font-semibold text-center border"></div>
+    </div>
+  </aside>
+
+  <!-- Modal 1: Personalizador de Empanadas -->
+  <div id="modalEmpanadas" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
+    <div class="w-full max-w-md rounded-2xl bg-carbon border border-amber-500/30 p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+        <h3 class="text-lg font-extrabold text-white">Agregar Empanadas</h3>
+        <button type="button" onclick="cerrarModal('modalEmpanadas')" class="text-stone-400 hover:text-white cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
+            Formato o individual a elección
+          </label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" data-formato-emp="elegida" onclick="seleccionarFormatoEmpanada('elegida')" class="btn-formato-emp py-2.5 px-2 rounded-xl text-xs font-bold border border-stone-700 bg-superficie text-stone-200 cursor-pointer">
+              Individual / A elección<br><span class="text-amber-400">$2.500 c/u</span>
+            </button>
+            <button type="button" data-formato-emp="media" onclick="seleccionarFormatoEmpanada('media')" class="btn-formato-emp py-2.5 px-2 rounded-xl text-xs font-bold border border-stone-700 bg-superficie text-stone-200 cursor-pointer">
+              Media docena (6 u.)<br><span class="text-amber-400">$13.000</span>
+            </button>
+            <button type="button" data-formato-emp="docena" onclick="seleccionarFormatoEmpanada('docena')" class="btn-formato-emp py-2.5 px-2 rounded-xl text-xs font-bold border border-stone-700 bg-superficie text-stone-200 cursor-pointer">
+              Docena (12 u.)<br><span class="text-amber-400">$25.000</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Reparto de cantidades de Carne y Jamón y Queso -->
+        <div id="contenedorRepartoEmpanadas" class="space-y-3 rounded-xl bg-obsidiana/80 border border-stone-800 p-3.5">
+          <div class="flex items-center justify-between gap-2">
+            <span id="tituloRepartoEmpanadas" class="text-xs font-bold uppercase tracking-wider text-amber-400">
+              Elegí cantidades por sabor
+            </span>
+            <span id="estadoCupoEmpanadas" class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300">
+              0 elegidas
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Control de Carne -->
+            <div class="rounded-xl bg-superficie border border-stone-700 p-2.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <label for="cantEmpCarne" class="text-xs font-bold text-white">Carne</label>
+                <button
+                  id="btnTodoCarne"
+                  type="button"
+                  onclick="llenarTodoSabor('carne')"
+                  class="text-[11px] text-amber-300 hover:text-amber-200 font-semibold cursor-pointer"
+                >
+                  Todo Carne
+                </button>
+              </div>
+              <div class="flex items-center justify-between gap-1.5">
+                <button
+                  type="button"
+                  onclick="ajustarCantidadSabor('carne', -1)"
+                  aria-label="Restar empanada de carne"
+                  class="w-8 h-8 rounded-lg bg-obsidiana hover:bg-stone-800 text-white font-bold text-sm flex items-center justify-center border border-stone-700 cursor-pointer"
+                >
+                  −
+                </button>
+                <input
+                  id="cantEmpCarne"
+                  type="number"
+                  min="0"
+                  max="200"
+                  value="0"
+                  oninput="manejarInputSabor('carne')"
+                  class="w-14 text-center rounded-lg bg-obsidiana border border-stone-700 focus:border-amber-400 focus:outline-none py-1 text-sm font-extrabold text-white"
+                />
+                <button
+                  type="button"
+                  onclick="ajustarCantidadSabor('carne', 1)"
+                  aria-label="Sumar empanada de carne"
+                  class="w-8 h-8 rounded-lg bg-obsidiana hover:bg-stone-800 text-white font-bold text-sm flex items-center justify-center border border-stone-700 cursor-pointer"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <!-- Control de Jamón y Queso -->
+            <div class="rounded-xl bg-superficie border border-stone-700 p-2.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <label for="cantEmpJyQ" class="text-xs font-bold text-white">Jamón y Queso</label>
+                <button
+                  id="btnTodoJyQ"
+                  type="button"
+                  onclick="llenarTodoSabor('jyq')"
+                  class="text-[11px] text-amber-300 hover:text-amber-200 font-semibold cursor-pointer"
+                >
+                  Todo J y Q
+                </button>
+              </div>
+              <div class="flex items-center justify-between gap-1.5">
+                <button
+                  type="button"
+                  onclick="ajustarCantidadSabor('jyq', -1)"
+                  aria-label="Restar empanada de jamón y queso"
+                  class="w-8 h-8 rounded-lg bg-obsidiana hover:bg-stone-800 text-white font-bold text-sm flex items-center justify-center border border-stone-700 cursor-pointer"
+                >
+                  −
+                </button>
+                <input
+                  id="cantEmpJyQ"
+                  type="number"
+                  min="0"
+                  max="200"
+                  value="0"
+                  oninput="manejarInputSabor('jyq')"
+                  class="w-14 text-center rounded-lg bg-obsidiana border border-stone-700 focus:border-amber-400 focus:outline-none py-1 text-sm font-extrabold text-white"
+                />
+                <button
+                  type="button"
+                  onclick="ajustarCantidadSabor('jyq', 1)"
+                  aria-label="Sumar empanada de jamón y queso"
+                  class="w-8 h-8 rounded-lg bg-obsidiana hover:bg-stone-800 text-white font-bold text-sm flex items-center justify-center border border-stone-700 cursor-pointer"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-2 text-xs pt-0.5">
+            <span id="mensajeCupoEmpanadas" class="text-amber-300 font-medium">
+              Elegí al menos 1 empanada ($2.500 c/u).
+            </span>
+            <button
+              id="btnMitadEmpanadas"
+              type="button"
+              onclick="repartirMitadEmpanadas()"
+              class="text-stone-300 hover:text-amber-300 underline font-medium cursor-pointer shrink-0"
+            >
+              Mitad y mitad
+            </button>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-obsidiana border border-stone-800 p-3.5 flex items-center justify-between">
+          <span class="text-xs text-stone-400">Subtotal del ítem:</span>
+          <span id="precioVistaEmpanadas" class="text-lg font-extrabold text-amber-400">$0</span>
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-1">
+        <button type="button" onclick="cerrarModal('modalEmpanadas')" class="flex-1 py-2.5 rounded-xl bg-superficie hover:bg-stone-800 text-stone-300 text-sm font-semibold cursor-pointer">
+          Cancelar
+        </button>
+        <button id="btnConfirmarEmpanadas" type="button" onclick="confirmarAgregarEmpanadas()" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidiana text-sm font-extrabold cursor-pointer">
+          Agregar al Pedido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Personalizador de Pebete -->
+  <div id="modalPebete" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
+    <div class="w-full max-w-md rounded-2xl bg-carbon border border-amber-500/30 p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+        <h3 class="text-lg font-extrabold text-white">Armar Pebete</h3>
+        <button type="button" onclick="cerrarModal('modalPebete')" class="text-stone-400 hover:text-white cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label for="variedadPebete" class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">
+            Variedad Base ($4.500)
+          </label>
+          <select id="variedadPebete" class="w-full rounded-xl bg-superficie border border-stone-700 px-3.5 py-2.5 text-sm text-white">
+            <option value="Jamón y Queso">Jamón y Queso — $4.500</option>
+            <option value="Salame y Queso">Salame y Queso — $4.500</option>
+          </select>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Pack de agregados (+$1.500)</span>
+            <span class="text-[11px] text-stone-400">1, 2 o los 3 = +$1.500</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-superficie border border-stone-700 text-xs font-semibold cursor-pointer">
+              <input type="checkbox" value="Tomate" onchange="actualizarVistaPebete()" class="agregado-pebete accent-amber-500 rounded" />
+              <span>Tomate</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-superficie border border-stone-700 text-xs font-semibold cursor-pointer">
+              <input type="checkbox" value="Huevo" onchange="actualizarVistaPebete()" class="agregado-pebete accent-amber-500 rounded" />
+              <span>Huevo</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-superficie border border-stone-700 text-xs font-semibold cursor-pointer">
+              <input type="checkbox" value="Lechuga" onchange="actualizarVistaPebete()" class="agregado-pebete accent-amber-500 rounded" />
+              <span>Lechuga</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-obsidiana border border-stone-800 p-3.5 flex items-center justify-between">
+          <span class="text-xs text-stone-400">Precio unitario:</span>
+          <span id="precioVistaPebete" class="text-lg font-extrabold text-amber-400">$4.500</span>
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-1">
+        <button type="button" onclick="cerrarModal('modalPebete')" class="flex-1 py-2.5 rounded-xl bg-superficie hover:bg-stone-800 text-stone-300 text-sm font-semibold cursor-pointer">
+          Cancelar
+        </button>
+        <button type="button" onclick="confirmarAgregarPebete()" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidiana text-sm font-extrabold cursor-pointer">
+          Agregar Pebete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Personalizador de Ensalada Salada -->
+  <div id="modalEnsalada" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
+    <div class="w-full max-w-md rounded-2xl bg-carbon border border-amber-500/30 p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+        <div>
+          <h3 class="text-lg font-extrabold text-white">Ensalada Salada ($4.000)</h3>
+          <p class="text-xs text-stone-400">Elegí hasta 4 ingredientes</p>
+        </div>
+        <button type="button" onclick="cerrarModal('modalEnsalada')" class="text-stone-400 hover:text-white cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Ingredientes (Máx. 4)</span>
+            <span id="contadorIngredientesEnsalada" class="text-xs font-bold px-2 py-0.5 rounded-full bg-stone-800 text-amber-300">0 / 4</span>
+          </div>
+          <div id="grillaIngredientesEnsalada" class="grid grid-cols-2 gap-2">
+            <!-- Se completa dinámicamente con JavaScript -->
+          </div>
+          <p id="avisoMaximoIngredientes" class="text-xs text-amber-300 mt-2 hidden">
+            Ya elegiste el máximo de 4 ingredientes. Destildá alguno si querés cambiarlo.
+          </p>
+        </div>
+
+        <label class="flex items-center justify-between p-3 rounded-xl bg-superficie border border-stone-700 cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <input id="checkboxAtun" type="checkbox" onchange="actualizarVistaEnsalada()" class="accent-amber-500 w-4 h-4 rounded" />
+            <div>
+              <div class="text-sm font-bold text-white">Extra de Atún</div>
+              <div class="text-xs text-stone-400">Recargo aparte</div>
+            </div>
+          </div>
+          <span class="text-sm font-extrabold text-amber-400">+$2.000</span>
+        </label>
+
+        <div class="rounded-xl bg-obsidiana border border-stone-800 p-3.5 flex items-center justify-between">
+          <span class="text-xs text-stone-400">Precio unitario:</span>
+          <span id="precioVistaEnsalada" class="text-lg font-extrabold text-amber-400">$4.000</span>
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-1">
+        <button type="button" onclick="cerrarModal('modalEnsalada')" class="flex-1 py-2.5 rounded-xl bg-superficie hover:bg-stone-800 text-stone-300 text-sm font-semibold cursor-pointer">
+          Cancelar
+        </button>
+        <button type="button" onclick="confirmarAgregarEnsalada()" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidiana text-sm font-extrabold cursor-pointer">
+          Agregar Ensalada
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Personalizador de Hamburguesas -->
+  <div id="modalHamburguesa" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
+    <div class="w-full max-w-md rounded-2xl bg-carbon border border-amber-500/30 p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+        <div>
+          <h3 id="tituloModalHamburguesa" class="text-lg font-extrabold text-white">Personalizar Hamburguesa</h3>
+          <p id="subtituloModalHamburguesa" class="text-xs text-stone-400">Marcá o quitá ingredientes antes de agregar</p>
+        </div>
+        <button type="button" onclick="cerrarModal('modalHamburguesa')" class="text-stone-400 hover:text-white cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Ingredientes</span>
+            <span id="ayudaIngredientesHamburguesa" class="text-[11px] text-stone-400">Destildá lo que quieras quitar</span>
+          </div>
+          <div id="grillaIngredientesHamburguesa" class="grid grid-cols-2 gap-2">
+            <!-- Se completa dinámicamente según si es Simple o Completa -->
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-obsidiana border border-stone-800 p-3.5 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-stone-400">Precio de la hamburguesa:</span>
+            <span id="precioVistaHamburguesa" class="text-lg font-extrabold text-amber-400">$7.000</span>
+          </div>
+          <p id="resumenIngredientesHamburguesa" class="text-xs text-stone-300 leading-snug"></p>
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-1">
+        <button type="button" onclick="cerrarModal('modalHamburguesa')" class="flex-1 py-2.5 rounded-xl bg-superficie hover:bg-stone-800 text-stone-300 text-sm font-semibold cursor-pointer">
+          Cancelar
+        </button>
+        <button type="button" onclick="confirmarAgregarHamburguesa()" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidiana text-sm font-extrabold cursor-pointer">
+          Agregar Hamburguesa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lógica interactiva en español -->
+  <script>
+    // Datos de contacto y opciones de la rotisería
+    const TELEFONO_CONTACTO = '2235382505';
+    const NUMERO_WHATSAPP = '5492235382505';
+    const PRECIO_EMPANADA_UNIDAD = 2500;
+    const MAX_EMPANADAS_LIBRES = 200;
+    const INGREDIENTES_ENSALADA = [
+      'Arroz',
+      'Lentejas',
+      'Tomate',
+      'Lechuga',
+      'Zanahoria',
+      'Huevo',
+      'Repollo'
+    ];
+
+    // Estado del carrito y formato activo de empanadas
+    let pedido = [];
+    let formatoEmpanadaActivo = 'elegida';
+    let hamburguesaActual = {
+      nombre: 'Completa',
+      precioBase: 7000,
+      tipo: 'completa'
+    };
+
+    // Ingredientes base de las hamburguesas completas y opciones de queso para simples y completas
+    const INGREDIENTES_BURG_COMPLETA = [
+      'Jamón',
+      'Tomate',
+      'Huevo'
+    ];
+
+    const TIPOS_QUESO = [
+      'Queso barra',
+      'Cheddar'
+    ];
+
+    // Formatea montos en pesos argentinos ($25.000)
+    function formatearPesos(monto) {
+      return '$' + Math.round(monto).toLocaleString('es-AR');
+    }
+
+    // Filtrado de secciones por categoría
+    document.querySelectorAll('.pestana-cat').forEach((pestana) => {
+      pestana.addEventListener('click', () => {
+        const categoriaElegida = pestana.getAttribute('data-categoria');
+
+        document.querySelectorAll('.pestana-cat').forEach((p) => {
+          p.classList.remove('activa', 'bg-amber-500', 'text-obsidiana', 'shadow-brilloAmbar', 'font-bold');
+          p.classList.add('bg-superficie', 'hover:bg-superficieHover', 'text-stone-300', 'border', 'border-stone-800', 'font-semibold');
+        });
+
+        pestana.classList.remove('bg-superficie', 'hover:bg-superficieHover', 'text-stone-300', 'border', 'border-stone-800', 'font-semibold');
+        pestana.classList.add('activa', 'bg-amber-500', 'text-obsidiana', 'shadow-brilloAmbar', 'font-bold');
+
+        document.querySelectorAll('.seccion-menu').forEach((seccion) => {
+          const seccionCat = seccion.getAttribute('data-seccion');
+          if (categoriaElegida === 'todos' || seccionCat === categoriaElegida) {
+            seccion.classList.remove('hidden');
+          } else {
+            seccion.classList.add('hidden');
+          }
+        });
+      });
+    });
+
+    // Apertura y cierre del panel lateral de pedido
+    function abrirPanel() {
+      const fondo = document.getElementById('fondoPanel');
+      const panel = document.getElementById('panelPedido');
+      fondo.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        fondo.classList.remove('opacity-0');
+        panel.classList.remove('translate-x-full');
+      });
+    }
+
+    function cerrarPanel() {
+      const fondo = document.getElementById('fondoPanel');
+      const panel = document.getElementById('panelPedido');
+      fondo.classList.add('opacity-0');
+      panel.classList.add('translate-x-full');
+      setTimeout(() => {
+        fondo.classList.add('hidden');
+      }, 220);
+    }
+
+    document.getElementById('btnAbrirPanelSuperior').addEventListener('click', abrirPanel);
+    document.getElementById('btnAbrirPanelPortada').addEventListener('click', abrirPanel);
+    document.getElementById('btnCerrarPanel').addEventListener('click', cerrarPanel);
+    document.getElementById('fondoPanel').addEventListener('click', cerrarPanel);
+
+    // Control de ventanas modales
+    function abrirModal(idModal) {
+      const modal = document.getElementById(idModal);
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function cerrarModal(idModal) {
+      const modal = document.getElementById(idModal);
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Agrega un producto directo al pedido o incrementa su cantidad
+    function agregarProductoDirecto(nombre, precioUnitario, detalle) {
+      const indiceExistente = pedido.findIndex(
+        (item) => item.nombre === nombre && item.detalle === detalle && item.precioUnitario === precioUnitario
+      );
+      if (indiceExistente > -1) {
+        pedido[indiceExistente].cantidad += 1;
+      } else {
+        pedido.push({
+          id: Date.now() + Math.random(),
+          nombre,
+          detalle,
+          precioUnitario,
+          cantidad: 1
+        });
+      }
+      renderizarPedido();
+      mostrarAviso(`Agregado: ${nombre}`, 'exito');
+    }
+
+    // --- Lógica de Empanadas ---
+    function obtenerCupoPackEmpanadas(formato = formatoEmpanadaActivo) {
+      if (formato === 'media') return 6;
+      if (formato === 'docena') return 12;
+      return 0;
+    }
+
+    function abrirModalEmpanadas(formatoInicial = 'elegida') {
+      seleccionarFormatoEmpanada(formatoInicial);
+      abrirModal('modalEmpanadas');
+    }
+
+    function seleccionarFormatoEmpanada(formato) {
+      formatoEmpanadaActivo = formato;
+      document.querySelectorAll('.btn-formato-emp').forEach((btn) => {
+        if (btn.getAttribute('data-formato-emp') === formato) {
+          btn.classList.add('border-amber-400', 'bg-amber-500/15', 'text-white');
+          btn.classList.remove('border-stone-700', 'bg-superficie', 'text-stone-200');
+        } else {
+          btn.classList.remove('border-amber-400', 'bg-amber-500/15', 'text-white');
+          btn.classList.add('border-stone-700', 'bg-superficie', 'text-stone-200');
+        }
+      });
+
+      const cupo = obtenerCupoPackEmpanadas(formato);
+      const inputCarne = document.getElementById('cantEmpCarne');
+      const inputJyQ = document.getElementById('cantEmpJyQ');
+      const tituloReparto = document.getElementById('tituloRepartoEmpanadas');
+      const btnTodoCarne = document.getElementById('btnTodoCarne');
+      const btnTodoJyQ = document.getElementById('btnTodoJyQ');
+      const btnMitad = document.getElementById('btnMitadEmpanadas');
+
+      if (cupo > 0) {
+        inputCarne.max = cupo;
+        inputJyQ.max = cupo;
+        inputCarne.value = 0;
+        inputJyQ.value = 0;
+        if (tituloReparto) tituloReparto.textContent = `Elegí cantidades por sabor (Cupo ${cupo})`;
+        if (btnTodoCarne) {
+          btnTodoCarne.textContent = `Todo (${cupo})`;
+          btnTodoCarne.classList.remove('hidden');
+        }
+        if (btnTodoJyQ) {
+          btnTodoJyQ.textContent = `Todo (${cupo})`;
+          btnTodoJyQ.classList.remove('hidden');
+        }
+        if (btnMitad) btnMitad.classList.remove('hidden');
+      } else {
+        inputCarne.max = MAX_EMPANADAS_LIBRES;
+        inputJyQ.max = MAX_EMPANADAS_LIBRES;
+        inputCarne.value = 1;
+        inputJyQ.value = 0;
+        if (tituloReparto) tituloReparto.textContent = 'Empanada individual / A elección ($2.500 c/u)';
+        if (btnTodoCarne) btnTodoCarne.classList.add('hidden');
+        if (btnTodoJyQ) btnTodoJyQ.classList.add('hidden');
+        if (btnMitad) btnMitad.classList.add('hidden');
+      }
+
+      actualizarVistaEmpanadas();
+    }
+
+    function manejarInputSabor(saborModificado) {
+      const cupo = obtenerCupoPackEmpanadas();
+      const inputCarne = document.getElementById('cantEmpCarne');
+      const inputJyQ = document.getElementById('cantEmpJyQ');
+
+      let carne = Math.max(0, parseInt(inputCarne.value || '0', 10) || 0);
+      let jyq = Math.max(0, parseInt(inputJyQ.value || '0', 10) || 0);
+
+      if (cupo > 0) {
+        if (carne > cupo) carne = cupo;
+        if (jyq > cupo) jyq = cupo;
+
+        if (carne + jyq > cupo) {
+          if (saborModificado === 'carne') {
+            jyq = Math.max(0, cupo - carne);
+          } else {
+            carne = Math.max(0, cupo - jyq);
+          }
+        }
+      } else {
+        if (carne > MAX_EMPANADAS_LIBRES) carne = MAX_EMPANADAS_LIBRES;
+        if (jyq > MAX_EMPANADAS_LIBRES) jyq = MAX_EMPANADAS_LIBRES;
+      }
+
+      inputCarne.value = carne;
+      inputJyQ.value = jyq;
+      actualizarVistaEmpanadas();
+    }
+
+    function ajustarCantidadSabor(sabor, delta) {
+      const cupo = obtenerCupoPackEmpanadas();
+      const inputCarne = document.getElementById('cantEmpCarne');
+      const inputJyQ = document.getElementById('cantEmpJyQ');
+
+      let carne = Math.max(0, parseInt(inputCarne.value || '0', 10) || 0);
+      let jyq = Math.max(0, parseInt(inputJyQ.value || '0', 10) || 0);
+
+      if (cupo > 0) {
+        const sumaActual = carne + jyq;
+        if (sabor === 'carne') {
+          if (delta > 0 && sumaActual < cupo) carne += 1;
+          else if (delta < 0 && carne > 0) carne -= 1;
+        } else {
+          if (delta > 0 && sumaActual < cupo) jyq += 1;
+          else if (delta < 0 && jyq > 0) jyq -= 1;
+        }
+      } else {
+        if (sabor === 'carne') {
+          carne = Math.min(MAX_EMPANADAS_LIBRES, Math.max(0, carne + delta));
+        } else {
+          jyq = Math.min(MAX_EMPANADAS_LIBRES, Math.max(0, jyq + delta));
+        }
+      }
+
+      inputCarne.value = carne;
+      inputJyQ.value = jyq;
+      actualizarVistaEmpanadas();
+    }
+
+    function llenarTodoSabor(sabor) {
+      const cupo = obtenerCupoPackEmpanadas();
+      if (cupo <= 0) return;
+      const inputCarne = document.getElementById('cantEmpCarne');
+      const inputJyQ = document.getElementById('cantEmpJyQ');
+
+      if (sabor === 'carne') {
+        inputCarne.value = cupo;
+        inputJyQ.value = 0;
+      } else {
+        inputCarne.value = 0;
+        inputJyQ.value = cupo;
+      }
+      actualizarVistaEmpanadas();
+    }
+
+    function repartirMitadEmpanadas() {
+      const cupo = obtenerCupoPackEmpanadas();
+      if (cupo <= 0) return;
+      const mitad = Math.floor(cupo / 2);
+      document.getElementById('cantEmpCarne').value = mitad;
+      document.getElementById('cantEmpJyQ').value = cupo - mitad;
+      actualizarVistaEmpanadas();
+    }
+
+    function obtenerDatosEmpanadas() {
+      const cupo = obtenerCupoPackEmpanadas();
+      const btnConfirmar = document.getElementById('btnConfirmarEmpanadas');
+      const carne = Math.max(0, parseInt(document.getElementById('cantEmpCarne').value || '0', 10) || 0);
+      const jyq = Math.max(0, parseInt(document.getElementById('cantEmpJyQ').value || '0', 10) || 0);
+      const totalElegido = carne + jyq;
+
+      const partesSabor = [];
+      if (carne > 0) partesSabor.push(`${carne} Carne`);
+      if (jyq > 0) partesSabor.push(`${jyq} Jamón y Queso`);
+      const resumenSabores = partesSabor.length > 0 ? partesSabor.join(' + ') : 'Sin seleccionar';
+
+      const badge = document.getElementById('estadoCupoEmpanadas');
+      const msg = document.getElementById('mensajeCupoEmpanadas');
+
+      if (cupo > 0) {
+        const faltan = Math.max(0, cupo - totalElegido);
+        const completo = totalElegido === cupo;
+
+        if (badge) {
+          badge.textContent = `${totalElegido} / ${cupo} elegidas · Restan ${faltan}`;
+          badge.className = completo
+            ? 'text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300'
+            : 'text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300';
+        }
+
+        if (msg) {
+          if (completo) {
+            msg.textContent = 'Cantidad completa lista para agregar.';
+            msg.className = 'text-emerald-400 font-semibold';
+          } else {
+            msg.textContent = `Te faltan elegir ${faltan} ${faltan === 1 ? 'unidad' : 'unidades'} para completar ${cupo}.`;
+            msg.className = 'text-amber-300 font-medium';
+          }
+        }
+
+        if (btnConfirmar) {
+          btnConfirmar.disabled = !completo;
+          btnConfirmar.classList.toggle('opacity-45', !completo);
+          btnConfirmar.classList.toggle('cursor-not-allowed', !completo);
+        }
+
+        if (formatoEmpanadaActivo === 'media') {
+          return {
+            nombre: 'Empanadas · Media Docena (6 u.)',
+            detalle: resumenSabores,
+            precioUnitario: 13000,
+            valido: completo
+          };
+        }
+
+        return {
+          nombre: 'Empanadas · Docena (12 u.)',
+          detalle: resumenSabores,
+          precioUnitario: 25000,
+          valido: completo
+        };
+      }
+
+      const validoLibre = totalElegido >= 1;
+      if (badge) {
+        badge.textContent = `${totalElegido} ${totalElegido === 1 ? 'empanada' : 'empanadas'}`;
+        badge.className = validoLibre
+          ? 'text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300'
+          : 'text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300';
+      }
+
+      if (msg) {
+        if (validoLibre) {
+          msg.textContent = `${resumenSabores} ($2.500 c/u).`;
+          msg.className = 'text-emerald-400 font-semibold';
+        } else {
+          msg.textContent = 'Indicá al menos 1 empanada entre Carne y Jamón y Queso.';
+          msg.className = 'text-amber-300 font-medium';
+        }
+      }
+
+      if (btnConfirmar) {
+        btnConfirmar.disabled = !validoLibre;
+        btnConfirmar.classList.toggle('opacity-45', !validoLibre);
+        btnConfirmar.classList.toggle('cursor-not-allowed', !validoLibre);
+      }
+
+      return {
+        nombre: totalElegido === 1 ? 'Empanada individual (1 u.)' : `Empanadas a elección (${totalElegido} u.)`,
+        detalle: `${resumenSabores} · $2.500 c/u`,
+        precioUnitario: totalElegido * PRECIO_EMPANADA_UNIDAD,
+        valido: validoLibre
+      };
+    }
+
+    function actualizarVistaEmpanadas() {
+      const datos = obtenerDatosEmpanadas();
+      document.getElementById('precioVistaEmpanadas').textContent = formatearPesos(datos.precioUnitario);
+    }
+
+    function confirmarAgregarEmpanadas() {
+      const datos = obtenerDatosEmpanadas();
+      if (!datos.valido) {
+        actualizarVistaEmpanadas();
+        return;
+      }
+      agregarProductoDirecto(datos.nombre, datos.precioUnitario, datos.detalle);
+      cerrarModal('modalEmpanadas');
+      abrirPanel();
+    }
+
+    // --- Lógica de Pebetes ---
+    function abrirModalPebete() {
+      document.querySelectorAll('.agregado-pebete').forEach((chk) => {
+        chk.checked = false;
+      });
+      actualizarVistaPebete();
+      abrirModal('modalPebete');
+    }
+
+    function actualizarVistaPebete() {
+      const elegidos = Array.from(document.querySelectorAll('.agregado-pebete:checked')).map((chk) => chk.value);
+      const recargoFijo = elegidos.length > 0 ? 1500 : 0;
+      document.getElementById('precioVistaPebete').textContent = formatearPesos(4500 + recargoFijo);
+    }
+
+    function confirmarAgregarPebete() {
+      const variedad = document.getElementById('variedadPebete').value;
+      const elegidos = Array.from(document.querySelectorAll('.agregado-pebete:checked')).map((chk) => chk.value);
+      const tieneAgregados = elegidos.length > 0;
+      const precioFinal = 4500 + (tieneAgregados ? 1500 : 0);
+      const detalle = tieneAgregados
+        ? `${variedad} + Pack agregados (+$1.500): ${elegidos.join(', ')}`
+        : `${variedad} (sin agregados)`;
+
+      agregarProductoDirecto(`Pebete ${variedad}`, precioFinal, detalle);
+      cerrarModal('modalPebete');
+      abrirPanel();
+    }
+
+    // --- Lógica de Ensalada Salada ---
+    function inicializarGrillaEnsalada() {
+      const grilla = document.getElementById('grillaIngredientesEnsalada');
+      grilla.innerHTML = INGREDIENTES_ENSALADA.map((ing) => `
+        <label class="flex items-center gap-2 p-2.5 rounded-xl bg-superficie border border-stone-700 text-xs font-semibold cursor-pointer select-none">
+          <input type="checkbox" value="${ing}" onchange="manejarCambioIngrediente(this)" class="ing-ensalada accent-amber-500 rounded" />
+          <span>${ing}</span>
+        </label>
+      `).join('');
+    }
+
+    function abrirModalEnsalada() {
+      document.querySelectorAll('.ing-ensalada').forEach((chk) => {
+        chk.checked = false;
+        chk.disabled = false;
+        chk.parentElement.classList.remove('opacity-50');
+      });
+      document.getElementById('checkboxAtun').checked = false;
+      document.getElementById('avisoMaximoIngredientes').classList.add('hidden');
+      actualizarVistaEnsalada();
+      abrirModal('modalEnsalada');
+    }
+
+    function manejarCambioIngrediente(chkCambiado) {
+      const marcados = Array.from(document.querySelectorAll('.ing-ensalada:checked'));
+      const aviso = document.getElementById('avisoMaximoIngredientes');
+
+      if (marcados.length > 4) {
+        chkCambiado.checked = false;
+        aviso.classList.remove('hidden');
+        return;
+      }
+
+      aviso.classList.add('hidden');
+      const llegoAlMaximo = marcados.length >= 4;
+
+      document.querySelectorAll('.ing-ensalada').forEach((chk) => {
+        if (!chk.checked) {
+          chk.disabled = llegoAlMaximo;
+          if (llegoAlMaximo) {
+            chk.parentElement.classList.add('opacity-50');
+          } else {
+            chk.parentElement.classList.remove('opacity-50');
+          }
+        }
+      });
+
+      actualizarVistaEnsalada();
+    }
+
+    function actualizarVistaEnsalada() {
+      const cantidadMarcados = document.querySelectorAll('.ing-ensalada:checked').length;
+      const llevaAtun = document.getElementById('checkboxAtun').checked;
+      document.getElementById('contadorIngredientesEnsalada').textContent = `${cantidadMarcados} / 4`;
+      document.getElementById('precioVistaEnsalada').textContent = formatearPesos(4000 + (llevaAtun ? 2000 : 0));
+    }
+
+    function confirmarAgregarEnsalada() {
+      const seleccionados = Array.from(document.querySelectorAll('.ing-ensalada:checked')).map((chk) => chk.value);
+      const llevaAtun = document.getElementById('checkboxAtun').checked;
+      const precioUnitario = 4000 + (llevaAtun ? 2000 : 0);
+
+      const textoIngredientes = seleccionados.length > 0 ? seleccionados.join(', ') : 'A elección (hasta 4)';
+      const textoAtun = llevaAtun ? ' + Atún (+$2.000)' : '';
+      agregarProductoDirecto('Ensalada Salada', precioUnitario, `${textoIngredientes}${textoAtun}`);
+      cerrarModal('modalEnsalada');
+      abrirPanel();
+    }
+
+    // --- Lógica de Hamburguesas ---
+    function abrirModalHamburguesa(nombre, precioBase, tipo) {
+      hamburguesaActual = { nombre, precioBase, tipo };
+      document.getElementById('tituloModalHamburguesa').textContent = `Hamburguesa ${nombre}`;
+      document.getElementById('precioVistaHamburguesa').textContent = formatearPesos(precioBase);
+
+      const grilla = document.getElementById('grillaIngredientesHamburguesa');
+
+      if (tipo === 'completa') {
+        document.getElementById('subtituloModalHamburguesa').textContent = 'Elegí 1 queso (Queso barra o Cheddar) y tildá o destildá jamón, tomate y huevo';
+        document.getElementById('ayudaIngredientesHamburguesa').textContent = 'Queso excluyente + ingredientes';
+        grilla.innerHTML = `
+          <div class="col-span-2 rounded-xl bg-superficie border border-stone-700 p-3 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400">
+                Queso (selección única)
+              </span>
+              <button
+                type="button"
+                onclick="limpiarQuesoCompleta()"
+                class="text-[11px] text-stone-400 hover:text-stone-200 underline cursor-pointer"
+              >
+                Sin queso
+              </button>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              ${TIPOS_QUESO.map((queso, idx) => `
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-obsidiana border border-stone-800 text-xs font-semibold cursor-pointer select-none">
+                  <input
+                    type="radio"
+                    name="quesoBurgCompleta"
+                    value="${queso}"
+                    ${idx === 0 ? 'checked' : ''}
+                    onchange="actualizarVistaHamburguesa()"
+                    class="accent-amber-500"
+                  />
+                  <span>${queso}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+          ${INGREDIENTES_BURG_COMPLETA.map((ing) => `
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-superficie border border-stone-700 text-xs font-semibold cursor-pointer select-none">
+              <input type="checkbox" value="${ing}" checked onchange="actualizarVistaHamburguesa()" class="ing-burg accent-amber-500 rounded" />
+              <span>${ing}</span>
+            </label>
+          `).join('')}
+        `;
+      } else {
+        document.getElementById('subtituloModalHamburguesa').textContent = 'Elegí entre Queso barra o Cheddar y tildá o destildá para incluirlo o quitarlo';
+        document.getElementById('ayudaIngredientesHamburguesa').textContent = 'Solo Queso barra o Cheddar';
+        grilla.innerHTML = `
+          <div class="col-span-2 space-y-1.5">
+            <label for="selectorQuesoSimple" class="block text-[11px] font-bold uppercase tracking-wider text-amber-400">
+              Tipo de queso
+            </label>
+            <select
+              id="selectorQuesoSimple"
+              onchange="sincronizarEtiquetaQuesoSimple()"
+              class="w-full rounded-xl bg-superficie border border-stone-700 focus:border-amber-400 focus:outline-none px-3 py-2 text-xs font-semibold text-white"
+            >
+              ${TIPOS_QUESO.map((queso) => `<option value="${queso}">${queso}</option>`).join('')}
+            </select>
+          </div>
+          <label class="col-span-2 flex items-center justify-between p-2.5 rounded-xl bg-superficie border border-stone-700 text-xs font-semibold cursor-pointer select-none">
+            <span class="flex items-center gap-2">
+              <input id="checkboxQuesoSimple" type="checkbox" checked onchange="actualizarVistaHamburguesa()" class="ing-burg-simple accent-amber-500 rounded" />
+              <span id="etiquetaQuesoSimple">Incluir Queso barra</span>
+            </span>
+            <span id="estadoQuesoSimple" class="text-[11px] text-amber-300 font-bold">Incluido</span>
+          </label>
+        `;
+      }
+
+      actualizarVistaHamburguesa();
+      abrirModal('modalHamburguesa');
+    }
+
+    function limpiarQuesoCompleta() {
+      document.querySelectorAll('input[name="quesoBurgCompleta"]').forEach((radio) => {
+        radio.checked = false;
+      });
+      actualizarVistaHamburguesa();
+    }
+
+    function sincronizarEtiquetaQuesoSimple() {
+      const selector = document.getElementById('selectorQuesoSimple');
+      const etiqueta = document.getElementById('etiquetaQuesoSimple');
+      if (selector && etiqueta) {
+        etiqueta.textContent = `Incluir ${selector.value}`;
+      }
+      actualizarVistaHamburguesa();
+    }
+
+    function obtenerDetalleHamburguesa() {
+      if (hamburguesaActual.tipo === 'completa') {
+        const quesoRadio = document.querySelector('input[name="quesoBurgCompleta"]:checked');
+        const quesoElegido = quesoRadio ? quesoRadio.value : null;
+        const extrasMarcados = Array.from(document.querySelectorAll('.ing-burg:checked')).map((chk) => chk.value);
+        const extrasSinMarcar = Array.from(document.querySelectorAll('.ing-burg:not(:checked)')).map((chk) => chk.value);
+
+        const incluidos = [];
+        if (quesoElegido) incluidos.push(quesoElegido);
+        incluidos.push(...extrasMarcados);
+
+        const quitados = [...extrasSinMarcar];
+        if (!quesoElegido) quitados.unshift('Queso barra/Cheddar');
+
+        if (incluidos.length === 0) {
+          return 'Solo medallón (sin queso ni ingredientes)';
+        }
+        if (quitados.length === 0) {
+          return `Completa con ${incluidos.join(', ')}`;
+        }
+        return `Con ${incluidos.join(', ')} · Sin: ${quitados.join(', ')}`;
+      }
+
+      const selectorQueso = document.getElementById('selectorQuesoSimple');
+      const chkQueso = document.getElementById('checkboxQuesoSimple');
+      const estadoQueso = document.getElementById('estadoQuesoSimple');
+      const tipoQueso = selectorQueso ? selectorQueso.value : 'Queso barra';
+      const llevaQueso = chkQueso ? chkQueso.checked : true;
+
+      if (estadoQueso) {
+        estadoQueso.textContent = llevaQueso ? 'Incluido' : 'Sin queso';
+      }
+
+      return llevaQueso ? `Con ${tipoQueso}` : `Sin queso (${tipoQueso} quitado)`;
+    }
+
+    function actualizarVistaHamburguesa() {
+      document.getElementById('resumenIngredientesHamburguesa').textContent = obtenerDetalleHamburguesa();
+    }
+
+    function confirmarAgregarHamburguesa() {
+      const detalle = obtenerDetalleHamburguesa();
+      agregarProductoDirecto(`Hamburguesa ${hamburguesaActual.nombre}`, hamburguesaActual.precioBase, detalle);
+      cerrarModal('modalHamburguesa');
+      abrirPanel();
+    }
+
+    // --- Operaciones del pedido y cálculo de descuentos ---
+    function cambiarCantidad(idItem, delta) {
+      const indice = pedido.findIndex((item) => item.id === idItem);
+      if (indice === -1) return;
+      pedido[indice].cantidad += delta;
+      if (pedido[indice].cantidad <= 0) {
+        pedido.splice(indice, 1);
+      }
+      renderizarPedido();
+    }
+
+    function quitarItem(idItem) {
+      pedido = pedido.filter((item) => item.id !== idItem);
+      renderizarPedido();
+    }
+
+    function vaciarPedido() {
+      pedido = [];
+      renderizarPedido();
+    }
+
+    function calcularPromocion(subtotal) {
+      const modo = document.getElementById('selectorPromo').value;
+      if (modo === 'agrupados4') {
+        return {
+          modo,
+          porcentaje: 0.10,
+          etiqueta: '10% OFF · Agrupando 4 pedidos',
+          descuento: Math.round(subtotal * 0.10)
+        };
+      }
+      if (modo === 'semana_sena') {
+        return {
+          modo,
+          porcentaje: 0.10,
+          etiqueta: '10% OFF · Semana (50% de seña)',
+          descuento: Math.round(subtotal * 0.10)
+        };
+      }
+      if (modo === 'semana_adelantado') {
+        return {
+          modo,
+          porcentaje: 0.15,
+          etiqueta: '15% OFF · Semana pago total adelantado',
+          descuento: Math.round(subtotal * 0.15)
+        };
+      }
+      return {
+        modo: 'ninguna',
+        porcentaje: 0,
+        etiqueta: '',
+        descuento: 0
+      };
+    }
+
+    function renderizarPedido() {
+      const contenedor = document.getElementById('contenedorItemsPedido');
+      const cantidadTotal = pedido.reduce((acum, item) => acum + item.cantidad, 0);
+      const subtotal = pedido.reduce((acum, item) => acum + item.precioUnitario * item.cantidad, 0);
+      const promo = calcularPromocion(subtotal);
+      const totalFinal = Math.max(0, subtotal - promo.descuento);
+
+      document.getElementById('contadorCabecera').textContent = cantidadTotal;
+      document.getElementById('cantidadBarraMovil').textContent = cantidadTotal;
+      document.getElementById('totalBarraMovil').textContent = formatearPesos(totalFinal);
+
+      if (pedido.length === 0) {
+        contenedor.innerHTML = `
+          <div class="rounded-2xl bg-superficie border border-dashed border-stone-700 p-8 text-center space-y-2">
+            <p class="text-sm font-bold text-stone-200">Todavía no agregaste productos</p>
+            <p class="text-xs text-stone-400">
+              Elegí empanadas, hamburguesas, pebetes, pizzas o ensaladas del menú para calcular el total y enviar tu pedido por WhatsApp.
+            </p>
+          </div>
+        `;
+      } else {
+        contenedor.innerHTML = pedido.map((item) => `
+          <div class="rounded-xl bg-superficie border border-stone-800 p-3.5 space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <h4 class="text-sm font-bold text-white leading-snug">${item.nombre}</h4>
+                <p class="text-[11px] text-stone-400">${item.detalle}</p>
+              </div>
+              <button
+                type="button"
+                onclick="quitarItem(${item.id})"
+                aria-label="Quitar producto"
+                class="text-stone-500 hover:text-rose-400 text-xs font-bold px-1 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            <div class="flex items-center justify-between pt-1">
+              <div class="inline-flex items-center gap-2 bg-obsidiana rounded-lg p-1 border border-stone-800">
+                <button
+                  type="button"
+                  onclick="cambiarCantidad(${item.id}, -1)"
+                  class="w-7 h-7 rounded-md bg-superficie hover:bg-stone-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer"
+                >
+                  −
+                </button>
+                <span class="text-xs font-extrabold text-white w-5 text-center">${item.cantidad}</span>
+                <button
+                  type="button"
+                  onclick="cambiarCantidad(${item.id}, 1)"
+                  class="w-7 h-7 rounded-md bg-superficie hover:bg-stone-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer"
+                >
+                  +
+                </button>
+              </div>
+              <span class="text-sm font-extrabold text-amber-400">${formatearPesos(item.precioUnitario * item.cantidad)}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('subtotalTexto').textContent = formatearPesos(subtotal);
+
+      const filaDescuento = document.getElementById('filaDescuento');
+      if (promo.descuento > 0) {
+        filaDescuento.classList.remove('hidden');
+        document.getElementById('etiquetaDescuento').textContent = promo.etiqueta;
+        document.getElementById('montoDescuentoTexto').textContent = `-${formatearPesos(promo.descuento)}`;
+      } else {
+        filaDescuento.classList.add('hidden');
+      }
+
+      document.getElementById('totalTexto').textContent = formatearPesos(totalFinal);
+
+      const filaSena = document.getElementById('filaSena');
+      if (promo.modo === 'semana_sena' && totalFinal > 0) {
+        filaSena.classList.remove('hidden');
+        document.getElementById('montoSenaTexto').textContent = formatearPesos(Math.round(totalFinal * 0.5));
+      } else {
+        filaSena.classList.add('hidden');
+      }
+    }
+
+    // Arma el mensaje completo en español esperando confirmación
+    function construirMensajeWhatsApp() {
+      const subtotal = pedido.reduce((acum, item) => acum + item.precioUnitario * item.cantidad, 0);
+      const promo = calcularPromocion(subtotal);
+      const totalFinal = Math.max(0, subtotal - promo.descuento);
+      const nombre = document.getElementById('nombrePedido').value.trim();
+
+      const lineas = [
+        'Hola! Quiero hacer el siguiente pedido y quedo a la espera de confirmación:',
+        ''
+      ];
+
+      if (nombre) {
+        lineas.push(`Nombre: ${nombre}`);
+        lineas.push('');
+      }
+
+      pedido.forEach((item) => {
+        lineas.push(`• ${item.cantidad}x *${item.nombre}* — ${formatearPesos(item.precioUnitario * item.cantidad)}`);
+        if (item.detalle) {
+          lineas.push(`  _${item.detalle}_`);
+        }
+      });
+
+      lineas.push('');
+      lineas.push(`Subtotal: ${formatearPesos(subtotal)}`);
+
+      if (promo.descuento > 0) {
+        lineas.push(`Promoción (${promo.etiqueta}): -${formatearPesos(promo.descuento)}`);
+        if (promo.modo === 'semana_sena') {
+          lineas.push(`Seña del 50% para reservar semana: ${formatearPesos(Math.round(totalFinal * 0.5))}`);
+        }
+      }
+
+      lineas.push(`*Total estimado: ${formatearPesos(totalFinal)}*`);
+
+      return lineas.join('\n');
+    }
+
+    // Abre WhatsApp directamente con el mensaje redactado
+    function enviarPedidoWhatsApp() {
+      if (pedido.length === 0) {
+        mostrarAviso('Agregá al menos un producto antes de pedir por WhatsApp.', 'aviso');
+        return;
+      }
+
+      try {
+        const mensaje = construirMensajeWhatsApp();
+        const urlWhatsApp = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+        mostrarAviso('Abriendo WhatsApp con tu pedido para esperar confirmación...', 'exito');
+        const ventana = window.open(urlWhatsApp, '_blank', 'noopener,noreferrer');
+        if (!ventana) {
+          window.location.href = urlWhatsApp;
+        }
+      } catch (error) {
+        mostrarAviso('No se pudo abrir WhatsApp automáticamente. Intentá nuevamente.', 'aviso');
+      }
+    }
+
+    // Muestra avisos visuales dentro del panel
+    function mostrarAviso(texto, tipo) {
+      const banner = document.getElementById('avisoEstado');
+      banner.textContent = texto;
+      banner.classList.remove(
+        'hidden',
+        'bg-emerald-500/15',
+        'text-emerald-300',
+        'border-emerald-500/30',
+        'bg-amber-500/15',
+        'text-amber-300',
+        'border-amber-500/30'
+      );
+
+      if (tipo === 'exito') {
+        banner.classList.add('bg-emerald-500/15', 'text-emerald-300', 'border-emerald-500/30');
+      } else {
+        banner.classList.add('bg-amber-500/15', 'text-amber-300', 'border-amber-500/30');
+      }
+
+      clearTimeout(banner._temporizador);
+      banner._temporizador = setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 4000);
+    }
+
+    // Inicialización al cargar la página
+    window.addEventListener('DOMContentLoaded', () => {
+      inicializarGrillaEnsalada();
+      renderizarPedido();
+    });
+  </script>
+</body>
+</html>
